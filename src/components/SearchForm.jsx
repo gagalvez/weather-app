@@ -5,14 +5,26 @@ function SearchForm() {
     const [city, setCity] = useState("");
     const [weather, setWeather] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null)
 
     async function handleSearch() {
+    if (!city || !city.trim()) {
+        setError("Enter a city to search...");
+        return;
+    }
+
+    try {
+        setError(null);
         setLoading(true);
         const result = await fetchWeather(city);
         setWeather(result);
+    } catch {
+        setError("City not found");
+    } finally {
         setLoading(false);
+    }
+    }
 
-    };
 
     return (
       <div>
@@ -23,6 +35,7 @@ function SearchForm() {
           onChange={(e) => setCity(e.target.value)}
         />
         <button onClick={handleSearch}>Search</button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
         {loading ? (
           <p>Loading...</p>
         ) : weather ? (
